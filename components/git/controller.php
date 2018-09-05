@@ -27,7 +27,10 @@ if ($_GET['action']=='submit') {
     if (preg_match('/[a-zA-Z\-_\/~]+/', $project_path) && isset($_SESSION['user'])) {
         $date = new DateTime();
 	$ts = $date->format('Y-m-d H:i:s');
-        $command = "cd ../../workspace/$project_path ; eval $(ssh-agent -s) ; ssh-add /etc/apache2/private/id_rsa ; git add . ; git commit -m \"".$_SESSION['user']." submitted these changes at ".$ts."\"; BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD) ; git push origin \$BRANCH_NAME ; git push origin master";
+        $ts_branch = $_SESSION['user']."_submit_".$date->format('U');
+        $submit_branch = $_SESSION['user']."_submit";
+        $wip_branch = $_SESSION['user']."_wip";
+        $command = "cd ../../workspace/$project_path ; eval $(ssh-agent -s) ; ssh-add /etc/apache2/private/id_rsa ; git add . ; git commit -m \"".$_SESSION['user']." submitted these changes at ".$ts."\"; BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD) ; git checkout origin/master ; git branch -D $ts_branch || : ; git branch -D $submit_branch || : ; git checkout -b $ts_branch ; git checkout -b $submit_branch ; git push origin $ts_branch $submit_branch ; git checkout \$BRANCH_NAME;";
         $submit = shell_exec($command);
     }
 
@@ -41,9 +44,8 @@ if ($_GET['action']=='stash') {
     if (preg_match('/[a-zA-Z\-_\/~]+/', $project_path) && isset($_SESSION['user'])) {
         $date = new DateTime();
 	$ts = $date->getTimestamp();
-        $branch_name = $_SESSION['user'].'_'.$ts;
-        $wip_start = $_SESSION['user']."_wip_start";
-        $stash = shell_exec("cd ../../workspace/$project_path ; eval $(ssh-agent -s) ; ssh-add /etc/apache2/private/id_rsa ; git stash ; git fetch ; git checkout origin/master ; git branch -D ".$branch_name." ; git checkout origin/master ; git checkout -b ".$branch_name." ; git merge origin/master ; git checkout -b ".$wip_start." ; git push origin ".$wip_start);
+        $submit_branch = $_SESSION['user']."_submit";
+        $stash = shell_exec("cd ../../workspace/$project_path ; eval $(ssh-agent -s) ; ssh-add /etc/apache2/private/id_rsa ; git stash ; git fetch ; git checkout $submit_branch ; git reset --hard ; git clean -dfx");
 error_log($stash);
     }
 
