@@ -19,7 +19,7 @@ class Git extends Common
         $ts = $date->format('Y-m-d H:i:s');
         $wip_branch = $_SESSION['user']."_wip";
         $submit_branch = $_SESSION['user']."_submit";
-        $command = "cd ../../workspace/$project_path ; eval $(ssh-agent -s) ; ssh-add /etc/apache2/private/id_rsa ; BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD) ; git checkout origin/master; git checkout -b $submit_branch || : ; git checkout -b $wip_branch || git checkout $wip_branch ; git add . ; git commit -m \"".$_SESSION['user']." saved these changes at ".$ts."\"; git push -f origin $submit_branch $wip_branch";
+        $command = "cd ../../workspace/$project_path ; eval $(ssh-agent -s) ; ssh-add /etc/apache2/private/id_rsa ; git checkout -b $submit_branch || : ; git checkout -b $wip_branch || git checkout $wip_branch ; git add . ; git commit -m \"".$_SESSION['user']." saved these changes at ".$ts."\"; git push origin $submit_branch ; git push origin $wip_branch";
             $save = shell_exec($command);
         }
     }
