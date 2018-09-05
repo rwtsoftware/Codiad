@@ -30,7 +30,7 @@ if ($_GET['action']=='submit') {
         $ts_branch = $_SESSION['user']."_submit_".$date->format('U');
         $submit_branch = $_SESSION['user']."_submit";
         $wip_branch = $_SESSION['user']."_wip";
-        $command = "cd ../../workspace/$project_path ; eval $(ssh-agent -s) ; ssh-add /etc/apache2/private/id_rsa ; git add . ; git commit -m \"".$_SESSION['user']." submitted these changes at ".$ts."\"; BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD) ; git checkout origin/master ; git branch -D $ts_branch || : ; git branch -D $submit_branch || : ; git checkout -b $ts_branch ; git checkout -b $submit_branch ; git push origin $ts_branch $submit_branch ; git checkout \$BRANCH_NAME;";
+        $command = "cd ../../workspace/$project_path ; eval $(ssh-agent -s) ; ssh-add /etc/apache2/private/id_rsa ; git add . ; git commit -m \"".$_SESSION['user']." submitted these changes at ".$ts."\"; git checkout origin/master ; git branch -D $ts_branch || : ; git branch -D $submit_branch || : ; git checkout -b $ts_branch ; git checkout -b $submit_branch ; git push origin $ts_branch ; git push origin $submit_branch ; git checkout $wip_branch;";
         $submit = shell_exec($command);
     }
 
