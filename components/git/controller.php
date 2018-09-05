@@ -45,7 +45,7 @@ if ($_GET['action']=='stash') {
         $date = new DateTime();
 	$ts = $date->getTimestamp();
         $submit_branch = $_SESSION['user']."_submit";
-        $stash = shell_exec("cd ../../workspace/$project_path ; eval $(ssh-agent -s) ; ssh-add /etc/apache2/private/id_rsa ; git stash ; git fetch ; git checkout $submit_branch ; git reset --hard ; git clean -dfx");
+        $stash = shell_exec("cd ../../workspace/$project_path ; eval $(ssh-agent -s) ; ssh-add /etc/apache2/private/id_rsa ; git stash ; git fetch ; git checkout origin/master ; git checkout $submit_branch || git checkout -b $submit_branch ; git reset --hard ; git clean -dfx");
 error_log($stash);
     }
 
@@ -58,7 +58,7 @@ if ($_GET['action']=='diff') {
     $diff = "";
     $wip_start = $_SESSION['user']."_submit";
     if (preg_match('/[a-zA-Z\-_\/~]+/', $project_path) && isset($_SESSION['user'])) {
-        $diff = shell_exec("cd ../../workspace/$project_path ; git diff ".$wip_start);
+        $diff = shell_exec("cd ../../workspace/$project_path ; git diff origin/".$wip_start);
     }
 
     //preg_replace('/\n/','<br>',$diff);
