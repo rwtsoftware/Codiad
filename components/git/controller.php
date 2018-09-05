@@ -56,7 +56,7 @@ error_log($stash);
 if ($_GET['action']=='diff') {
     $project_path = $_SESSION['project'];
     $diff = "";
-    $wip_start = $_SESSION['user']."_wip_start";
+    $wip_start = $_SESSION['user']."_submit";
     if (preg_match('/[a-zA-Z\-_\/~]+/', $project_path) && isset($_SESSION['user'])) {
         $diff = shell_exec("cd ../../workspace/$project_path ; git diff ".$wip_start);
     }
